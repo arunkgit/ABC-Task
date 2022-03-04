@@ -23,6 +23,50 @@ CMD ["node", "server.js"] # Running the server.js file to make our application u
 docker build bala12345/nodeweb:v1 .
 
 
-######## EKS CLUSTER CREATION ON AWS ##############
+######## EKS CLUSTER CREATION ON AWS using MAC as base machine ##############
+
+Step-00:
+
+1.Install AWS CLI
+2.Install kubectl CLI
+3.Install eksctl CLI
+
+
+Step-01-01: MAC - Install and configure AWS CLI
+
+** Download the binary and install via command line using below two commands **
+
+# Download Binary
+curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+
+# Install the binary
+sudo installer -pkg ./AWSCLIV2.pkg -target /
+
+
+** Verify the installation **
+
+```
+aws --version
+aws-cli/2.0.7 Python/3.7.4 Darwin/19.4.0 botocore/2.0.0dev11
+
+which aws
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
