@@ -53,6 +53,67 @@ which aws
 ```
 
 
+**** Step-01-02: Configure AWS Command Line using Security Credentials *****
+
+Go to AWS Management Console --> Services --> IAM
+Select the IAM User: kalyan
+Important Note: Use only IAM user to generate Security Credentials. Never ever use Root User. (Highly not recommended)
+Click on Security credentials tab
+Click on Create access key
+Copy Access ID and Secret access key
+Go to command line and provide the required details
+
+
+aws configure
+AWS Access Key ID [None]: XXXXXXXXX  (Replace your creds when prompted)
+AWS Secret Access Key [None]: XXXXXXX  (Replace your creds when prompted)
+Default region name [None]: us-east-1
+Default output format [None]: json
+
+
+**** Step-02-01: MAC - Install and configure kubectl ****
+
+# Download the Package
+mkdir kubectlbinary
+cd kubectlbinary
+curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.18/2020-04-16/bin/darwin/amd64/kubectl
+
+# Provide execute permissions
+chmod +x ./kubectl
+
+# Set the Path by copying to user Home Directory
+mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+echo 'export PATH=$PATH:$HOME/bin' >> ~/.bash_profile
+
+# Verify the kubectl version
+kubectl version --short --client
+Output: Client Version: v1.18-eks-e16311
+
+
+**** Step-03-01: eksctl on Mac ****
+
+# Install Homebrew on MacOs
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+# Install the Weaveworks Homebrew tap.
+brew tap weaveworks/tap
+
+# Install the Weaveworks Homebrew tap.
+brew install weaveworks/tap/eksctl
+
+# Verify eksctl version
+eksctl version
+
+
+
+
+
+
+
+
+
+
+
 
 
 
