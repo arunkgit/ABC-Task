@@ -20,7 +20,7 @@ CMD ["node", "server.js"] # Running the server.js file to make our application u
 
 ## Building the docker image and push it to docker hub ##
 
-docker build bala12345/nodeweb:v1 .
+docker build bala12345/nodeapp:v1
 
 
 ######## EKS CLUSTER CREATION and command installation steps ON AWS using MAC as base machine ##############
