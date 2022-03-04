@@ -23,7 +23,7 @@ CMD ["node", "server.js"] # Running the server.js file to make our application u
 docker build bala12345/nodeweb:v1 .
 
 
-######## EKS CLUSTER CREATION ON AWS using MAC as base machine ##############
+######## EKS CLUSTER CREATION and command installation steps ON AWS using MAC as base machine ##############
 
 Step-00:
 
@@ -103,6 +103,89 @@ brew install weaveworks/tap/eksctl
 
 # Verify eksctl version
 eksctl version
+
+
+
+
+                                      ******* Create EKS Cluster & Node Groups *******
+                                        
+                                        
+
+Step-01: Create EKS Cluster using eksctl without node group
+
+It will take 15 to 20 minutes to create the Cluster Control Plane
+
+
+# Create Cluster
+eksctl create cluster --name=eksdemo1 \
+                      --region=us-east-1 \
+                      --zones=us-east-1a,us-east-1b \
+                      --without-nodegroup 
+
+# Get List of clusters
+eksctl get cluster
+
+
+Step-02: Create & Associate IAM OIDC Provider for our EKS Cluster 
+
+eksctl utils associate-iam-oidc-provider \
+    --region us-east-1 \
+    --cluster eksdemo1 \
+    --approve
+    
+    
+Step-03: Create EC2 Keypair
+
+Create a new EC2 Keypair with name as kube-demo
+This keypair we will use it when creating the EKS NodeGroup.
+This will help us to login to the EKS Worker Nodes using Terminal.
+
+
+
+Step-04: Create Node Group with additional Add-Ons in Public Subnets
+
+# Create Public Node Group   
+eksctl create nodegroup --cluster=eksdemo1 \
+                       --region=us-east-1 \
+                       --name=eksdemo1-ng-public1 \
+                       --node-type=t3.medium \
+                       --nodes=2 \
+                       --nodes-min=2 \
+                       --nodes-max=4 \
+                       --node-volume-size=20 \
+                       --ssh-access \
+                       --ssh-public-key=kube-demo \
+                       --managed \
+                       --asg-access \
+                       --external-dns-access \
+                       --full-ecr-access \
+                       --appmesh-access \
+                       --alb-ingress-access 
+                       
+                       
+                       
+                       
+List Worker Nodes
+
+
+# List EKS clusters
+eksctl get cluster
+
+# List NodeGroups in a cluster
+eksctl get nodegroup --cluster=<clusterName>
+
+# List Nodes in current kubernetes cluster
+kubectl get nodes -o wide
+
+# Our kubectl context should be automatically changed to new cluster
+kubectl config view --minify
+
+Finally installed Kubernetes cluster on EKS Successfully 
+
+
+
+
+
 
 
 
