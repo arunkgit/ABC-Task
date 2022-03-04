@@ -5,7 +5,7 @@ kind: Deployment
 metadata:
   name: nodeapp
 spec:
-  replicas: 3
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -20,7 +20,70 @@ spec:
         app: nodeapp
     spec:
       containers:
-      - image: balaji12345/nodeapp:v1
+      - image: balaji12345/nodeapp:v1 # This is image which we have dockerise and pushed to docker hub
         name: nodeapp
         ports:
-        - containerPort: 8080
+        - containerPort: 8080  # our application running on port 8080
+        
+        
+### Expose deployment as service to access our application #####
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: nodeapp
+spec:
+  selector:
+    app: nodeapp
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+    nodePort: 30000
+  type: LoadBalancer
+
+
+### Scaling a Service have 2 methods manual & using resources ###
+
+Manual method
+=============
+
+kubectl scale deployment nodeapp --replicas=5 # This will scale our deployment to 5 replicas
+
+
+Autoscaling have 2 methods
+==========================
+
+1.horizontal pod autoscaling
+2.vertical pod autoscaling
+
+
+1.HPA
+======
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nginx
+
+spec:
+  maxReplicas: 5
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: nodeapp
+  targetCPUUtilizationPercentage: 50
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
