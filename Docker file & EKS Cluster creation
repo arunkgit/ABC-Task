@@ -1,0 +1,28 @@
+
+# Below steps are used to dockerise the nodejs application
+# we are copying package.json & server.js to run our node js
+
+FROM node:14  #Base Image
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 8080  # Exposing node js on 8080 as per the server.js file
+
+CMD ["node", "server.js"] # Running the server.js file to make our application up and running 
+
+
+
+## Building the docker image and push it to docker hub ##
+
+docker build bala12345/nodeweb:v1 .
+
+
+######## EKS CLUSTER CREATION ON AWS ##############
+
+
