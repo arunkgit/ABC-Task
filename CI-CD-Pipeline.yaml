@@ -1,5 +1,5 @@
 def getdockettag(){
-    def tag = sh script: 'git rev-parse HEAD', returnStdout: true
+    def tag = sh script: 'git rev-parse HEAD', returnStdout: true  // Getting the latest commit id and storing in tag variable
     return tag
 }
 
@@ -12,19 +12,19 @@ pipeline {
 
        stage('Git checkout'){
             steps { 
-                git 'https://github.com/balagit/halosys'
+                git 'https://github.com/balagit/halosys' // cloning the code
             }
         }     
 
         stage('Maven Build'){
             steps { 
-                sh 'mvn clean package'
+                sh 'mvn clean package' // building the artifactory
             }
         }  
 
         stage('SonarQube Analysis') {
             withSonarQubeEnv('sonar') { 
-            sh 'mvn sonar:sonar'
+            sh 'mvn sonar:sonar'    // publishing code to sonar qube for code quality 
         }
     }
 
@@ -33,7 +33,7 @@ pipeline {
           timeout(time: 1, unit: 'HOURS') {
               def qg = waitForQualityGate()
               if (qg.status != 'OK') {
-                  error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                  error "Pipeline aborted due to quality gate failure: ${qg.status}"  // Mark build as failed if qualitygate not passed
               }
           }
       }    
