@@ -1,0 +1,82 @@
+def getdockettag(){
+    def tag = sh script: 'git rev-parse HEAD', returnStdout: true
+    return tag
+}
+
+pipeline {
+   agent any 
+   environment {
+       DOCKER_TAG = getdockettag()
+   }
+   stages{
+
+       stage('Git checkout'){
+            steps { 
+                git 'https://github.com/balagit/halosys'
+            }
+        }     
+
+        stage('Maven Build'){
+            steps { 
+                sh 'mvn clean package'
+            }
+        }  
+
+        stage('SonarQube Analysis') {
+            withSonarQubeEnv('sonar') { 
+            sh 'mvn sonar:sonar'
+        }
+    }
+
+    
+    stage("Quality gate status"){
+          timeout(time: 1, unit: 'HOURS') {
+              def qg = waitForQualityGate()
+              if (qg.status != 'OK') {
+                  error "Pipeline aborted due to quality gate failure: ${qg.status}"
+              }
+          }
+      }    
+
+       stage('Build Docker image'){
+         steps{
+            sh "docker build . -t bala12345/nodejs:${DOCKER_TAG}" 
+
+         }
+
+       stage('Push image to docker hub'){
+          steps{
+                    withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockerpwd')]) {
+                        sh "docker login -u admin -p ${dockerpwd}"
+                        sh "docker push bala12345/nodejs:${DOCKER_TAG}"
+                }
+
+          }  
+
+       }    
+
+         stage('Deploy to kubernetes'){
+          steps{
+                sh """
+	                VERSION=${getdockettag()}
+	                sed -i "s/commit_hash/\$VERSION/g" deployment.yml  //deployment file will be available as per the source code
+	               """
+                sshagent(['kubernetes-kops-machine']) {
+	              sh "scp -o StrictHostKeyChecking=no deployments.yml ec2-user@172.31.1.2:/home/ec2-user/"  // 172.31.1.2 is the kops machine IP where we run all k8s command on this machine
+	                try{
+	                    sh "ssh ec2-user@172.31.1.2 kubectl create -f /home/ec2-user/deployments.yml"  // first time this command will execute
+	                }catch(ex){
+	                    sh "ssh ec2-user@172.31.1.2 kubectl apply -f /home/ec2-user/deployments.yml"  // second time onwards this will execute even if we upgrade out image version
+	                 }               
+                }
+          } 
+
+       } 
+
+
+      } 
+
+   }
+
+}
+
