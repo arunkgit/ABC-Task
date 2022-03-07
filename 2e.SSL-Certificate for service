@@ -1,12 +1,7 @@
 
-## We can secrets of type tls
-
-kubectl create secret tls tls-secret --cert=path/to/tls.cert --key=path/to/tls.key
-
-
 ## open ssl is the command  to generate certificate
 
-openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365
+openssl req -newkey rsa:2048 -nodes -key tls.key -out tls.crt -subj "/CN=example.com" 
 
               
               
