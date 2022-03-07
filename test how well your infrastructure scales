@@ -1,0 +1,23 @@
+
+## Below is the example for pod level 
+
+Since we have enables Horizontal autoscaling if any CPU spikes to 50 % it can add more pods maximum it can go to 5 pods
+
+## Below is an example for HPA
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nginx
+
+spec:
+  maxReplicas: 5
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: nodeapp
+  targetCPUUtilizationPercentage: 50
+  
+  
+  ## If the load is more on node level we have integrated our EKS cluster with auto scaling so node will increase automatically when CPU spikes
