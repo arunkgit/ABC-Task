@@ -61,8 +61,8 @@ pipeline {
 	                VERSION=${getdockettag()}
 	                sed -i "s/commit_hash/\$VERSION/g" deployment.yml  //deployment file will be available as per the source code
 	               """
-                sshagent(['kubernetes-kops-machine']) {
-	              sh "scp -o StrictHostKeyChecking=no deployments.yml ec2-user@172.31.1.2:/home/ec2-user/"  // 172.31.1.2 is the kops machine IP where we run all k8s command on this machine
+                sshagent(['kubernetes-deploy']) {
+	            sh "scp -o StrictHostKeyChecking=no deployments.yml ec2-user@172.31.1.2:/home/ec2-user/"  // 172.31.1.2 is the master machine IP (or) we can use jump server IP
 	                try{
 	                    sh "ssh ec2-user@172.31.1.2 kubectl create -f /home/ec2-user/deployments.yml"  // first time this command will execute
 	                }catch(ex){
