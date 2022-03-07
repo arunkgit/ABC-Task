@@ -1,0 +1,5 @@
+
+Since we have enables Horizontal autoscaling if any CPU spikes to 50 % it can add more pods maximum it can go to 5 pods
+
+## Below is an example for HPA
+
